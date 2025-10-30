@@ -2,11 +2,13 @@ package mk.ukim.finki.wp.lab.repository;
 
 import mk.ukim.finki.wp.lab.bootstrap.DataHolder;
 import mk.ukim.finki.wp.lab.model.Book;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Repository
 public class InMemoryBookRepository implements BookRepository {
 
     @Override

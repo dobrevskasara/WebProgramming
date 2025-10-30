@@ -1,19 +1,26 @@
 package mk.ukim.finki.wp.lab.web;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import mk.ukim.finki.wp.lab.model.Book;
 import mk.ukim.finki.wp.lab.service.BookService;
-import org.springframework.stereotype.Component;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.web.IWebExchange;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
-@WebServlet(name = "bookListServlet", urlPatterns = "/")
-@Component
+
+@WebServlet(name = "BookListServlet", urlPatterns = "/")
 public class BookListServlet extends HttpServlet {
 
     private final BookService bookService;
@@ -23,36 +30,30 @@ public class BookListServlet extends HttpServlet {
     }
 
     @Override
-    public void init() throws ServletException {
-        // овозможува Spring injection во servlet
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        resp.setContentType("text/html");
+        PrintWriter out = resp.getWriter();
 
         List<Book> books = bookService.listAll();
 
-        resp.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = resp.getWriter();
-
         out.println("<!DOCTYPE html>");
-        out.println("<html><head><meta charset='utf-8'><title>Book Reservation</title></head><body>");
+        out.println("<html><head><meta charset='UTF-8'><title>Book Reservation</title></head><body>");
         out.println("<h1>Welcome to our Book Reservation App</h1>");
-        out.println("<form method='POST' action='/bookReservation'>");
+        out.println("<form action='/bookReservation' method='POST'>");
 
         out.println("<h2>Choose a book:</h2>");
-        for (Book b : books) {
-            out.printf(
-                    "<div class='book-option'><input type='radio' name='bookTitle' value='%s' required> Title: %s, Genre: %s, Rating: %.2f</div>",
-                    b.getTitle(), b.getTitle(), b.getGenre(), b.getAverageRating()
-            );
+        for (Book book : books) {
+            out.println("<div class='book-option'>");
+            out.println("<input type='radio' name='bookTitle' value='" + book.getTitle() + "' required>");
+            out.println("Title: " + book.getTitle() + ", Genre: " + book.getGenre() + ", Rating: " + book.getAverageRating());
+            out.println("</div>");
         }
 
         out.println("<h2>Enter your information:</h2>");
-        out.println("Name: <input type='text' name='readerName' required><br/>");
-        out.println("Address: <input type='text' name='readerAddress' required><br/>");
+        out.println("<label>Your Name:</label>");
+        out.println("<input type='text' name='readerName' required><br/>");
+        out.println("<label>Your Address:</label>");
+        out.println("<input type='text' name='readerAddress' required><br/>");
 
         out.println("<h2>Choose number of copies:</h2>");
         out.println("<input type='number' name='numCopies' min='1' max='10' required><br/><br/>");
@@ -60,5 +61,18 @@ public class BookListServlet extends HttpServlet {
         out.println("<input type='submit' value='Reserve Book'>");
         out.println("</form>");
         out.println("</body></html>");
+    }
+
+    // За search (точка 7) можеш да додадеш doPost за филтрирање
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String text = req.getParameter("searchText");
+        String ratingParam = req.getParameter("searchRating");
+        Double rating = ratingParam != null && !ratingParam.isEmpty() ? Double.parseDouble(ratingParam) : 0.0;
+
+        List<Book> books = bookService.searchBooks(text, rating);
+
+        req.setAttribute("books", books);
+        doGet(req, resp); // Прикажи ги филтрираните книги
     }
 }

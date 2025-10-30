@@ -5,10 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-// @NoArgsConstructor
+//@NoArgsConstructor
 @AllArgsConstructor
+
 public class Book {
     private String title;
     private String genre;
     private double averageRating;
+
+    //public Book() {
+    //}
 }
