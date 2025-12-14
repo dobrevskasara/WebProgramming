@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Reservation</title>
+    <style>
+        body {
+            width: 900px;
+            margin: auto;
+            font-family: Arial, sans-serif;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .actions button {
+            margin-right: 5px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome to our Book Reservation App</h1>
+</header>
+<main>
+
+    <h2>Recently Viewed:</h2>
+<!--    <ul>-->
+<!--    <li th:each="book : ${recentlyViewed}"-->
+        <!--            th:text="${book.title + ' - ' + (book.author != null)}">-->
+        <!--        </li>-->
+        <!--        <li th:if="${recentlyViewed.size() == 0}"></li>-->
+<!--    </ul>-->
+
+    <form th:action="@{/books}" method="get">
+        <select name="genre">
+            <option value="">All Genres</option>
+            <option th:each="g : ${genres}"
+                    th:value="${g}"
+                    th:text="${g}"
+                    th:selected="${g == selectedGenre}">
+            </option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <form th:action="@{/books/reserve}" method="post">
+        <h2>Available Books:</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Select</th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Rating</th>
+                <th>Author</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${books}">
+                <td>
+                    <input type="radio" name="bookTitle" th:value="${book.title}" required/>
+                </td>
+                <td th:text="${book.title}"></td>
+                <td th:text="${book.genre}"></td>
+                <td th:text="${book.averageRating}"></td>
+                <td th:text="${book.author != null ? book.author.name + ' ' + book.author.surname : 'Unknown Author'}"></td>
+                <td class="actions">
+                    <a th:href="@{'/books/book-form/' + ${book.id}}">
+                        <button type="button">Edit</button>
+                    </a>
+                    <form th:action="@{'/books/delete/' + ${book.id}}" method="post" style="display:inline">
+                        <button type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- ADD NEW BOOK -->
+        <a th:href="@{/books/book-form}">
+            <button type="button">Add New Book</button>
+        </a>
+
+        <h2>Enter your information:</h2>
+        <label>Your Name:</label>
+        <input type="text" name="readerName" required><br/>
+        <label>Your Address:</label>
+        <input type="text" name="readerAddress" required><br/>
+
+        <h2>Choose number of copies:</h2>
+        <input type="number" name="numCopies" min="1" max="10" required><br/><br/>
+        <input type="submit" value="Reserve Book">
+    </form>
+
+</main>
+</body>
+</html>
