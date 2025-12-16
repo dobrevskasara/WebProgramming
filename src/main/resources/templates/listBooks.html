@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Book Reservation</title>
@@ -83,22 +84,30 @@
                 <td th:text="${book.genre}"></td>
                 <td th:text="${book.averageRating}"></td>
                 <td th:text="${book.author != null ? book.author.name + ' ' + book.author.surname : 'Unknown Author'}"></td>
-                <td class="actions">
-                    <a th:href="@{'/books/book-form/' + ${book.id}}">
+
+                <td class="actions" sec:authorize="isAuthenticated()">
+                    <a sec:authorize="hasRole('ADMIN')"
+                       th:href="@{'/books/book-form/' + ${book.id}}">
                         <button type="button">Edit</button>
                     </a>
-                    <form th:action="@{'/books/delete/' + ${book.id}}" method="post" style="display:inline">
+
+                    <form sec:authorize="hasRole('ADMIN')"
+                          th:action="@{'/books/delete/' + ${book.id}}"
+                          method="post"
+                          style="display:inline">
                         <button type="submit">Delete</button>
                     </form>
                 </td>
+
+
             </tr>
             </tbody>
         </table>
 
-        <!-- ADD NEW BOOK -->
-        <a th:href="@{/books/book-form}">
+        <a sec:authorize="hasRole('ADMIN')" th:href="@{/books/book-form}">
             <button type="button">Add New Book</button>
         </a>
+
 
         <h2>Enter your information:</h2>
         <label>Your Name:</label>

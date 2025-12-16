@@ -15,9 +15,9 @@ public class WpApplication {
     public static void main(String[] args) {
         SpringApplication.run(WpApplication.class, args);
     }
-
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 }
+//    @Bean
+//    PasswordEncoder passwordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
+//}
