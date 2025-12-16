@@ -63,8 +63,12 @@
 <main>
 
     <h2>Recently Viewed:</h2>
-    <!-- <ul th:each="book : ${recentlyViewed}"
-    th:text="${book.title + ' - ' + (book.author != null)}"></ul> -->
+    <ul>
+        <li th:each="book : ${recentlyViewed}"
+            th:text="${book.title}">
+        </li>
+    </ul>
+
 
     <form th:action="@{/books}" method="get">
         <select name="genre">
