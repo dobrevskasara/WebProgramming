@@ -50,13 +50,13 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(requests -> requests
-                        .requestMatchers("/", "/books", "/login").permitAll()
+                        .requestMatchers("/", "/books", "/").permitAll()
                         .requestMatchers("/books/add", "/books/edit/**", "/books/delete/**")
                         .hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
+//                        .loginPage("/login")
                         .defaultSuccessUrl("/books", true)
                         .permitAll()
                 )
